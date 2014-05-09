@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+#作者：Leniy
 from distutils.core import setup
 import py2exe, sys, os
 

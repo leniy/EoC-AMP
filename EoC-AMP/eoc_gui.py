@@ -9,6 +9,12 @@
 
 import wx
 
+ID_2 = 1000
+ID_3 = 1001
+ID_4 = 1002
+ID_5 = 1003
+ID_6 = 1004
+
 ###########################################################################
 ## Class MainFrame
 ###########################################################################
@@ -16,7 +22,7 @@ import wx
 class MainFrame ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"广电网络-Eoc头终端管理   version:2014.04.19", pos = wx.DefaultPosition, size = wx.Size( 471,228 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"广电网络EoC终端自动管理软件(作者:Leniy)", pos = wx.DefaultPosition, size = wx.Size( 471,228 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNFACE ) )
@@ -48,7 +54,7 @@ class MainFrame ( wx.Frame ):
 		self.StartIP = wx.TextCtrl( self, wx.ID_ANY, u"50", wx.DefaultPosition, wx.DefaultSize, 0 )
 		gSizer2.Add( self.StartIP, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.EndIP = wx.TextCtrl( self, wx.ID_ANY, u"109", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.EndIP = wx.TextCtrl( self, wx.ID_ANY, u"113", wx.DefaultPosition, wx.DefaultSize, 0 )
 		gSizer2.Add( self.EndIP, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		fgSizer2.Add( gSizer2, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
@@ -81,10 +87,10 @@ class MainFrame ( wx.Frame ):
 		self.m_staticText4.Wrap( -1 )
 		fgSizer4.Add( self.m_staticText4, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.StartPVID = wx.TextCtrl( self, wx.ID_ANY, u"2000", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.StartPVID = wx.TextCtrl( self, wx.ID_ANY, u"2001", wx.DefaultPosition, wx.DefaultSize, 0 )
 		fgSizer4.Add( self.StartPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.EndPVID = wx.TextCtrl( self, wx.ID_ANY, u"2499", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.EndPVID = wx.TextCtrl( self, wx.ID_ANY, u"2249", wx.DefaultPosition, wx.DefaultSize, 0 )
 		fgSizer4.Add( self.EndPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		self.SetButton = wx.Button( self, wx.ID_ANY, u"自动设置", wx.DefaultPosition, wx.DefaultSize, 0 )
@@ -96,6 +102,27 @@ class MainFrame ( wx.Frame ):
 		
 		self.SetSizer( fgSizer )
 		self.Layout()
+		self.m_menubar6 = wx.MenuBar( 0 )
+		self.about1 = wx.Menu()
+		self.about2 = wx.MenuItem( self.about1, ID_2, u"程序：Eoc头终端自动管理", wx.EmptyString, wx.ITEM_NORMAL )
+		self.about1.AppendItem( self.about2 )
+		
+		self.about3 = wx.MenuItem( self.about1, ID_3, u"用途：自动检索全部用户终端，并可以自动配置", wx.EmptyString, wx.ITEM_NORMAL )
+		self.about1.AppendItem( self.about3 )
+		
+		self.about4 = wx.MenuItem( self.about1, ID_4, u"作者：Leniy", wx.EmptyString, wx.ITEM_NORMAL )
+		self.about1.AppendItem( self.about4 )
+		
+		self.about5 = wx.MenuItem( self.about1, ID_5, u"授权：仅限公司技术部使用", wx.EmptyString, wx.ITEM_NORMAL )
+		self.about1.AppendItem( self.about5 )
+		
+		self.about6 = wx.MenuItem( self.about1, ID_6, u"版本：2014.04", wx.EmptyString, wx.ITEM_NORMAL )
+		self.about1.AppendItem( self.about6 )
+		
+		self.m_menubar6.Append( self.about1, u"关于本软件" ) 
+		
+		self.SetMenuBar( self.m_menubar6 )
+		
 		
 		self.Centre( wx.BOTH )
 		

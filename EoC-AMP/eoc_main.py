@@ -1,4 +1,5 @@
 # -*- coding: UTF-8 -*-
+#作者：Leniy
 
 import wx
 import eoc_gui
@@ -105,6 +106,7 @@ class MainGUI ( eoc_gui.MainFrame ):
 					eoc_lib.set_port_pvid(ip,cookies,str(port_index2),str(temppvid))
 					eoc_lib.set_port_pvid(ip,cookies,str(port_index3),str(temppvid))
 					eoc_lib.set_port_pvid(ip,cookies,str(port_index4),str(temppvid))
+					print ip + ", " + temp_cnu['Cnu_name'] + "   pvid: " + str(temppvid)
 		wx.MessageBox(u"pvid设置成功",u"通知",wx.OK|wx.ICON_INFORMATION)
 
 

@@ -1,8 +1,6 @@
 # -*- coding: UTF-8 -*-
 #山东广电网络集团-EoC管理软件
-'''1111
-
-'''
+#作者：Leniy
 
 import urllib2
 import hashlib
@@ -28,7 +26,7 @@ def logineoc(ip, user, password):
 	#设置cookie保存登录状态
 	cookies = urllib2.HTTPCookieProcessor()
 	opener = urllib2.build_opener(cookies)
-	urllib2.socket.setdefaulttimeout(5)  #设置超时为5秒
+	urllib2.socket.setdefaulttimeout(2)  #设置超时为2秒
 	#首先登陆账号，并设置cookie
 	request = urllib2.Request(
 		url	 = 'http://' + ip + '/index.html',
@@ -69,11 +67,11 @@ def get_dev_unique_number(ip, cookies):
 		response = response.replace('window.top.__mib_oids = ','')
 		response = response.replace(';','')
 		response = eval(response)
-		termEocCnuIndex                     = str(response['termEocCnuIndex'])
-		termEocCnuDevName                   = str(response['termEocCnuDevName'])
-		termEocCnuDevMac                    = str(response['termEocCnuDevMac'])
-		termEocCnuDevModel                  = str(response['termEocCnuDevModel'])
-		termEocCnuEtherVlanPVID             = str(response['termEocCnuEtherVlanPVID'])
+		termEocCnuIndex         = str(response['termEocCnuIndex'])
+		termEocCnuDevName       = str(response['termEocCnuDevName'])
+		termEocCnuDevMac        = str(response['termEocCnuDevMac'])
+		termEocCnuDevModel      = str(response['termEocCnuDevModel'])
+		termEocCnuEtherVlanPVID = str(response['termEocCnuEtherVlanPVID'])
 		return 0
 	except:
 		print 'Error: ' + ip + ' mib_obj_enum.js can NOT be downloaded'
@@ -104,7 +102,9 @@ def get_cnu_devlist(ip, cookies):
 		response = response.read()
 		#print response
 		response = response.replace('null','None')
+		#首先把json的空值符号换成python的空值符号
 		response = response.replace('\/','/')
+		#然后替换转义符
 		cnu_ajax_devlist = eval(response)
 		if cnu_ajax_devlist['errcode'] == 0:
 			cnu_devlist = cnu_ajax_devlist['entry']
@@ -235,6 +235,7 @@ def show_eochead_info(ip):
 #函数返回：int格式的错误代码
 def set_port_pvid(ip, cookies, port_index, pvid):
 	global termEocCnuEtherVlanPVID
+	get_dev_unique_number(ip,cookies) #因为获取全部ip的cnu列表的时候，这些设备独立编码已经被覆盖了，所以设置pvid的时候要重新设置一次并保存回全局变量中
 	set_port_pvid_poststr = termEocCnuEtherVlanPVID + '.' + port_index + '=' + pvid
 	#print set_port_pvid_poststr
 
@@ -257,24 +258,3 @@ def set_port_pvid(ip, cookies, port_index, pvid):
 		print 'Error: ' + ip + ' set port pvid error'
 		return -1
 
-
-###################################
-# 下面是测试设置vlan的代码
-
-#cookies,errorcode1 = logineoc('x.x.x.70','admin','admin')
-#get_dev_unique_number('x.x.x.70',cookies)
-#cnu_devlist,errorcode2 = get_cnu_devlist('x.x.x.70',cookies)
-#test_cnu = cnu_devlist[2]
-#print test_cnu
-#test_index = test_cnu[termEocCnuIndex]
-#test_port_index1 = test_index + 100000 + 1
-#test_port_index2 = test_index + 100000 + 2
-#test_port_index3 = test_index + 100000 + 3
-#test_port_index4 = test_index + 100000 + 4
-#print set_port_pvid('x.x.x.70',cookies,str(test_port_index1),str(2155))
-#print set_port_pvid('x.x.x.70',cookies,str(test_port_index2),str(2155))
-#print set_port_pvid('x.x.x.70',cookies,str(test_port_index3),str(2155))
-#print set_port_pvid('x.x.x.70',cookies,str(test_port_index4),str(2155))
-#cnu_devlist,errorcode2 = get_cnu_devlist('x.x.x.70',cookies)
-#test_cnu = cnu_devlist[2]
-#print test_cnu
