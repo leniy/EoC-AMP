@@ -22,7 +22,7 @@ ID_6 = 1004
 class MainFrame ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"广电网络EoC终端自动管理软件(作者:Leniy)", pos = wx.DefaultPosition, size = wx.Size( 471,228 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"广电网络EoC终端自动管理软件(作者:Leniy)", pos = wx.DefaultPosition, size = wx.Size( 471,247 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNFACE ) )
@@ -54,7 +54,7 @@ class MainFrame ( wx.Frame ):
 		self.StartIP = wx.TextCtrl( self, wx.ID_ANY, u"50", wx.DefaultPosition, wx.DefaultSize, 0 )
 		gSizer2.Add( self.StartIP, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.EndIP = wx.TextCtrl( self, wx.ID_ANY, u"113", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.EndIP = wx.TextCtrl( self, wx.ID_ANY, u"130", wx.DefaultPosition, wx.DefaultSize, 0 )
 		gSizer2.Add( self.EndIP, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		fgSizer2.Add( gSizer2, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
@@ -90,7 +90,7 @@ class MainFrame ( wx.Frame ):
 		self.StartPVID = wx.TextCtrl( self, wx.ID_ANY, u"2001", wx.DefaultPosition, wx.DefaultSize, 0 )
 		fgSizer4.Add( self.StartPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.EndPVID = wx.TextCtrl( self, wx.ID_ANY, u"2249", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.EndPVID = wx.TextCtrl( self, wx.ID_ANY, u"2999", wx.DefaultPosition, wx.DefaultSize, 0 )
 		fgSizer4.Add( self.EndPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		self.SetButton = wx.Button( self, wx.ID_ANY, u"自动设置", wx.DefaultPosition, wx.DefaultSize, 0 )

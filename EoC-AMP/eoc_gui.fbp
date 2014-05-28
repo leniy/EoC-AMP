@@ -37,7 +37,7 @@
             <property name="minimum_size"></property>
             <property name="name">MainFrame</property>
             <property name="pos"></property>
-            <property name="size">471,228</property>
+            <property name="size">471,247</property>
             <property name="style">wxDEFAULT_FRAME_STYLE</property>
             <property name="subclass"></property>
             <property name="title">广电网络EoC终端自动管理软件(作者:Leniy)</property>
@@ -344,7 +344,7 @@
                                                 <property name="validator_style">wxFILTER_NONE</property>
                                                 <property name="validator_type">wxDefaultValidator</property>
                                                 <property name="validator_variable"></property>
-                                                <property name="value">113</property>
+                                                <property name="value">130</property>
                                                 <property name="window_extra_style"></property>
                                                 <property name="window_name"></property>
                                                 <property name="window_style"></property>
@@ -699,7 +699,7 @@
                                         <property name="validator_style">wxFILTER_NONE</property>
                                         <property name="validator_type">wxDefaultValidator</property>
                                         <property name="validator_variable"></property>
-                                        <property name="value">2249</property>
+                                        <property name="value">2999</property>
                                         <property name="window_extra_style"></property>
                                         <property name="window_name"></property>
                                         <property name="window_style"></property>
