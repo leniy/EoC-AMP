@@ -170,7 +170,7 @@ def show_eochead_info(ip):
 	global termEocCnuDevModel
 	#global termEocCnuEtherVlanPVID
 
-	cookies,errorcode1 = logineoc(ip,'admin','admin')  #如果登陆出错，返回错误代码，并打印错误原因
+	cookies,errorcode1 = logineoc(ip,'xxxxxxxxx','xxxxxxxxxxx')  #如果登陆出错，返回错误代码，并打印错误原因
 	if errorcode1 == 0:  #如果成功登陆，再继续执行下面的代码
 		get_dev_unique_number(ip,cookies)
 		cnu_devlist,errorcode2 = get_cnu_devlist(ip,cookies)  #如果获取列表失败，返回错误代码，并打印错误原因

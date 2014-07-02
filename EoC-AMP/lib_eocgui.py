@@ -22,7 +22,7 @@ ID_6 = 1004
 class MainFrame ( wx.Frame ):
 	
 	def __init__( self, parent ):
-		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"广电网络EoC终端自动管理软件(作者:Leniy)", pos = wx.DefaultPosition, size = wx.Size( 471,247 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
+		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"广电网络EoC终端自动管理软件(作者:Leniy)", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
 		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNFACE ) )
@@ -68,12 +68,12 @@ class MainFrame ( wx.Frame ):
 		
 		gSizer4 = wx.GridSizer( 1, 1, 0, 0 )
 		
-		self.m_hyperlink1 = wx.HyperlinkCtrl( self, wx.ID_ANY, u"About", u"http://blog.leniy.org", wx.DefaultPosition, wx.DefaultSize, wx.HL_DEFAULT_STYLE )
-		gSizer4.Add( self.m_hyperlink1, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		self.m_bitmap1 = wx.StaticBitmap( self, wx.ID_ANY, wx.Bitmap( u"author.png", wx.BITMAP_TYPE_ANY ), wx.DefaultPosition, wx.DefaultSize, 0 )
+		gSizer4.Add( self.m_bitmap1, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		fgSizer2.Add( gSizer4, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
 		
-		sbSizer1.Add( fgSizer2, 1, wx.EXPAND|wx.ALL, 5 )
+		sbSizer1.Add( fgSizer2, 1, wx.EXPAND|wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
 		
 		fgSizer.Add( sbSizer1, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
 		
@@ -102,6 +102,7 @@ class MainFrame ( wx.Frame ):
 		
 		self.SetSizer( fgSizer )
 		self.Layout()
+		fgSizer.Fit( self )
 		self.m_menubar6 = wx.MenuBar( 0 )
 		self.about1 = wx.Menu()
 		self.about2 = wx.MenuItem( self.about1, ID_2, u"程序：Eoc头终端自动管理", wx.EmptyString, wx.ITEM_NORMAL )

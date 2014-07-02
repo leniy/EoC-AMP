@@ -2,28 +2,33 @@
 #作者：Leniy
 
 import wx
-import eoc_gui
-import eoc_lib
+import lib_eocgui
+import lib_eoc as eoc_lib
 import time
+import os
 
 # 定义全局变量
 all_head_info_list = []
 pvid_dict = {}
 unset_cnu_count = 0
 
+#创建logs文件夹，放置每次运行的记录文件
+if not os.path.exists('logs'):
+	os.makedirs('logs')
+
 #创建新的类MainGUI，继承自eoc_gui库。同时定义点击按钮时执行的代码
-class MainGUI ( eoc_gui.MainFrame ):
+class MainGUI ( lib_eocgui.MainFrame ):
 	def search( self, event ):
 		global all_head_info_list
 		global unset_cnu_count
 		all_head_info_list = [] #首先把全局列表清空
 		unset_cnu_count = 0 #用来定义有多少个cnu设备尚未设置pvid
 
-		output_csv_file_name = time.strftime('%Y%m%d_%H%M%S.csv',time.localtime(time.time()))#文件名是导出文件的完整文件名，包含扩展名
+		output_csv_file_name = time.strftime('logs/%Y%m%d_%H%M%S.csv',time.localtime(time.time()))#文件名是导出文件的完整文件名，包含扩展名
 		start_ip      = int(self.StartIP.GetValue())#int格式的数字有效范围0-255，是ip格式A.B.C.D中的最后一位D
 		end_ip        = int(self.EndIP.GetValue())
 
-		wx.MessageBox(u"开始搜索，界面可能处于假死状态，请耐心等待。\n\n执行完成后，数据将保存在csv文件中",u"警告",wx.OK|wx.ICON_INFORMATION)
+		#wx.MessageBox(u"开始搜索，界面可能处于假死状态，请耐心等待。\n\n执行完成后，数据将保存在csv文件中",u"警告",wx.OK|wx.ICON_INFORMATION)
 
 		file_object = open(output_csv_file_name, 'w+')
 		s = '"Eoc Head IP","Cnu Index","Cnu Name","Cnu MAC","Cnu Modal","Cnu PVID1","Cnu PVID2","Cnu PVID3","Cnu PVID4"\n'
@@ -93,7 +98,7 @@ class MainGUI ( eoc_gui.MainFrame ):
 		for temp_cnu in all_head_info_list: #循环检测所有的cnu
 			if temp_cnu['Cnu_pvid1'] == 1:  #如果当前cnu第一个FE网口没有设置pvid，则开始设置
 				ip = temp_cnu['Eoc_ip']
-				cookies,errorcode1 = eoc_lib.logineoc(ip,'xxxxxxxxxx','xxxxxxxxxxxxxxxx')
+				cookies,errorcode1 = eoc_lib.logineoc(ip,'xxxxxxxxx','xxxxxxxxxxx')
 				if errorcode1 == 0: #重新登陆一次，并获取cookies
 					cnuindex = temp_cnu['Cnu_index'] #cnu的索引
 					port_index1 = 100000 + cnuindex + 1 #4个FE端口的索引。因为暂时没有开通其他服务，所以4个端口设置同样的pvid
