@@ -11,16 +11,16 @@ import wx
 import wx.xrc
 
 ###########################################################################
-## Class MainFrame
+## Class Main_Frame
 ###########################################################################
 
-class MainFrame ( wx.Frame ):
+class Main_Frame ( wx.Frame ):
 	
 	def __init__( self, parent ):
 		wx.Frame.__init__ ( self, parent, id = wx.ID_ANY, title = u"广电网络EoC终端自动管理软件(作者:Leniy)", pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.DEFAULT_FRAME_STYLE|wx.TAB_TRAVERSAL )
 		
 		self.SetSizeHintsSz( wx.DefaultSize, wx.DefaultSize )
-		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_BTNFACE ) )
+		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
 		fgSizer = wx.FlexGridSizer( 4, 1, 0, 0 )
 		fgSizer.SetFlexibleDirection( wx.BOTH )
@@ -67,61 +67,12 @@ class MainFrame ( wx.Frame ):
 		
 		fgSizer.Add( sbSizer1, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
 		
-		sbSizer2 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"自动设置VLAN范围" ), wx.VERTICAL )
-		
-		fgSizer4 = wx.FlexGridSizer( 1, 3, 0, 0 )
-		fgSizer4.SetFlexibleDirection( wx.BOTH )
-		fgSizer4.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
-		
-		self.m_staticText4 = wx.StaticText( self, wx.ID_ANY, u"请输入vlan起止范围", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.m_staticText4.Wrap( -1 )
-		fgSizer4.Add( self.m_staticText4, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
-		
-		self.StartPVID = wx.TextCtrl( self, wx.ID_ANY, u"2001", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.StartPVID.SetMaxLength( 0 ) 
-		fgSizer4.Add( self.StartPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
-		
-		self.EndPVID = wx.TextCtrl( self, wx.ID_ANY, u"2499", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.EndPVID.SetMaxLength( 0 ) 
-		fgSizer4.Add( self.EndPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		self.m_notebook1 = wx.Notebook( self, wx.ID_ANY, wx.DefaultPosition, wx.Size( -1,200 ), 0 )
+		self.m_notebook1.SetForegroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
+		self.m_notebook1.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
 		
 		
-		sbSizer2.Add( fgSizer4, 1, wx.EXPAND|wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-		
-		
-		fgSizer.Add( sbSizer2, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
-		
-		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"自动检索并设置" ), wx.VERTICAL )
-		
-		fgSizer5 = wx.FlexGridSizer( 1, 3, 0, 0 )
-		fgSizer5.SetFlexibleDirection( wx.BOTH )
-		fgSizer5.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
-		
-		self.EocStartButton = wx.Button( self, wx.ID_ANY, u"开始执行", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.EocStartButton.SetDefault() 
-		fgSizer5.Add( self.EocStartButton, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
-		
-		self.rate_gauge = wx.Gauge( self, wx.ID_ANY, 100, wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
-		self.rate_gauge.SetValue( 0 ) 
-		fgSizer5.Add( self.rate_gauge, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
-		
-		self.rate_staticText = wx.StaticText( self, wx.ID_ANY, u"已完成0%", wx.DefaultPosition, wx.DefaultSize, 0 )
-		self.rate_staticText.Wrap( -1 )
-		fgSizer5.Add( self.rate_staticText, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
-		
-		
-		sbSizer3.Add( fgSizer5, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
-		
-		
-		fgSizer.Add( sbSizer3, 1, wx.ALL|wx.EXPAND|wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
-		
-		sbSizer4 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Log记录区" ), wx.VERTICAL )
-		
-		self.LogRedirect = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,60 ), wx.TE_MULTILINE )
-		sbSizer4.Add( self.LogRedirect, 1, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
-		
-		
-		fgSizer.Add( sbSizer4, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		fgSizer.Add( self.m_notebook1, 1, wx.ALL|wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
 		
 		
 		self.SetSizer( fgSizer )
@@ -150,6 +101,78 @@ class MainFrame ( wx.Frame ):
 		
 		
 		self.Centre( wx.BOTH )
+	
+	def __del__( self ):
+		pass
+	
+
+###########################################################################
+## Class VLAN_Panel
+###########################################################################
+
+class VLAN_Panel ( wx.Panel ):
+	
+	def __init__( self, parent ):
+		wx.Panel.__init__ ( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.TAB_TRAVERSAL )
+		
+		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
+		
+		fgSizer5 = wx.FlexGridSizer( 3, 1, 0, 0 )
+		fgSizer5.SetFlexibleDirection( wx.BOTH )
+		fgSizer5.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		sbSizer2 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"自动设置VLAN范围" ), wx.VERTICAL )
+		
+		fgSizer4 = wx.FlexGridSizer( 1, 3, 0, 0 )
+		fgSizer4.SetFlexibleDirection( wx.BOTH )
+		fgSizer4.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		self.m_staticText4 = wx.StaticText( self, wx.ID_ANY, u"请输入vlan起止范围", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.m_staticText4.Wrap( -1 )
+		fgSizer4.Add( self.m_staticText4, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.StartPVID = wx.TextCtrl( self, wx.ID_ANY, u"2001", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.StartPVID.SetMaxLength( 0 ) 
+		fgSizer4.Add( self.StartPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.EndPVID = wx.TextCtrl( self, wx.ID_ANY, u"2499", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.EndPVID.SetMaxLength( 0 ) 
+		fgSizer4.Add( self.EndPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		
+		sbSizer2.Add( fgSizer4, 1, wx.EXPAND|wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+		
+		
+		fgSizer5.Add( sbSizer2, 1, wx.EXPAND, 5 )
+		
+		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"自动检索并设置" ), wx.VERTICAL )
+		
+		fgSizer51 = wx.FlexGridSizer( 1, 3, 0, 0 )
+		fgSizer51.SetFlexibleDirection( wx.BOTH )
+		fgSizer51.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		self.EocStartButton = wx.Button( self, wx.ID_ANY, u"开始执行", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.EocStartButton.SetDefault() 
+		fgSizer51.Add( self.EocStartButton, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		self.rate_gauge = wx.Gauge( self, wx.ID_ANY, 100, wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
+		self.rate_gauge.SetValue( 0 ) 
+		fgSizer51.Add( self.rate_gauge, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.EXPAND, 5 )
+		
+		self.rate_staticText = wx.StaticText( self, wx.ID_ANY, u"已完成0%", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.rate_staticText.Wrap( -1 )
+		fgSizer51.Add( self.rate_staticText, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		
+		
+		sbSizer3.Add( fgSizer51, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
+		
+		
+		fgSizer5.Add( sbSizer3, 1, wx.EXPAND, 5 )
+		
+		
+		self.SetSizer( fgSizer5 )
+		self.Layout()
+		fgSizer5.Fit( self )
 		
 		# Connect Events
 		self.EocStartButton.Bind( wx.EVT_BUTTON, self.eocstart )
@@ -161,5 +184,58 @@ class MainFrame ( wx.Frame ):
 	# Virtual event handlers, overide them in your derived class
 	def eocstart( self, event ):
 		event.Skip()
+	
+
+###########################################################################
+## Class NTP_Panel
+###########################################################################
+
+class NTP_Panel ( wx.Panel ):
+	
+	def __init__( self, parent ):
+		wx.Panel.__init__ ( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( 500,300 ), style = wx.TAB_TRAVERSAL )
+		
+		fgSizer7 = wx.FlexGridSizer( 0, 2, 0, 0 )
+		fgSizer7.SetFlexibleDirection( wx.BOTH )
+		fgSizer7.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		
+		self.SetSizer( fgSizer7 )
+		self.Layout()
+	
+	def __del__( self ):
+		pass
+	
+
+###########################################################################
+## Class Log_Panel
+###########################################################################
+
+class Log_Panel ( wx.Panel ):
+	
+	def __init__( self, parent ):
+		wx.Panel.__init__ ( self, parent, id = wx.ID_ANY, pos = wx.DefaultPosition, size = wx.Size( -1,-1 ), style = wx.TAB_TRAVERSAL )
+		
+		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_WINDOW ) )
+		
+		fgSizer10 = wx.FlexGridSizer( 1, 1, 0, 0 )
+		fgSizer10.SetFlexibleDirection( wx.BOTH )
+		fgSizer10.SetNonFlexibleGrowMode( wx.FLEX_GROWMODE_SPECIFIED )
+		
+		sbSizer4 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Log记录区" ), wx.VERTICAL )
+		
+		self.LogRedirect = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,60 ), wx.TE_MULTILINE )
+		sbSizer4.Add( self.LogRedirect, 1, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
+		
+		
+		fgSizer10.Add( sbSizer4, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		
+		
+		self.SetSizer( fgSizer10 )
+		self.Layout()
+		fgSizer10.Fit( self )
+	
+	def __del__( self ):
+		pass
 	
 

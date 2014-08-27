@@ -8,24 +8,17 @@
 
 import wx
 import eoclib
-import eoclib.gui as lib_eoc_gui
-import eoclib.func as lib_eoc_func
+import eoclib.gui
+import eoclib.func
 import time
 import os
 import sys
 from threading import Thread
 from wx.lib.pubsub import setupkwargs
 from wx.lib.pubsub import pub
-#from wx.lib.pubsub import Publisher #用这条命令会导致py2exe生成的程序报错
-#from wx.lib.pubsub import setuparg1  #换成这个后，需要把代码中的Publisher()换成Publisher
 
 #sys.argv.append("-gui")#测试GUI模式
 #sys.argv.append("-console")#测试命令行模式
-
-#定义全局变量
-#all_head_info_list = []
-#pvid_dict = {}
-#unset_cnu_count = 0
 
 #创建logs文件夹，放置每次运行的记录文件
 if not os.path.exists('logs'):
@@ -40,45 +33,58 @@ class RedirectText(object):
 		self.out.WriteText(string)
 		#self.out.WriteText('\n\r')
 
-#创建新的MainGUI类，继承自lib_eoc_gui库。同时定义点击按钮时执行的代码
-class MainGUI ( lib_eoc_gui.MainFrame ):
+#创建新的Main_Frame类，继承自eoclib.gui库。同时定义点击按钮时执行的代码
+class Main_Frame ( eoclib.gui.Main_Frame ):
 	def __init__( self, parent ):
 		#创建界面
-		lib_eoc_gui.MainFrame.__init__ ( self, parent )
+		eoclib.gui.Main_Frame.__init__ ( self, parent )
+		nb = self.m_notebook1
+		nb.AddPage(VLAN_Panel(nb), "VLAN")
+		nb.AddPage(Log_Panel(nb), "Log")
 		#读取配置信息
-		start_ip, end_ip, start_pvid, end_pvid = lib_eoc_func.getconfig()
+		start_ip, end_ip, start_pvid, end_pvid = eoclib.func.getconfig()
 		self.StartIP.SetValue(start_ip)
 		self.EndIP.SetValue(end_ip)
-		self.StartPVID.SetValue(start_pvid)
-		self.EndPVID.SetValue(end_pvid)
 		#监听来自update的消息，利用updateDisplay函数更新窗口
-		#Publisher().subscribe(self.updateDisplay, "update")
 		pub.subscribe(self.updateDisplay, "update")
-		#将系统标准输出重定向
-		redir=RedirectText(self.LogRedirect)#gui布局代码尚未更新，暂时定向到这个文本框
-		sys.stdout=redir
-	def eocstart( self, event ):
-		event.GetEventObject().Disable()#把执行本函数的按钮禁用掉
-		#因为用户可能修改了配置，故需要重新获取一次配置信息，并在线程执行前保存至配置文件
-		start_ip   = str(self.StartIP.GetValue())
-		end_ip     = str(self.EndIP.GetValue())
-		start_pvid = str(self.StartPVID.GetValue())
-		end_pvid   = str(self.EndPVID.GetValue())
-		lib_eoc_func.saveconfig(start_ip, end_ip, start_pvid, end_pvid)
-		EocStartThread()
-		self.rate_staticText.SetLabel(u"开始自动配置")
 	def updateDisplay(self, msg):#msg是监听自update的消息
-		#t = msg.data#t是EocStartThread线程执行进度的百分比
-		t = msg
-		if isinstance(t, int):#如果是数字，说明线程正在执行，更新进度条
-			self.rate_staticText.SetLabel(u"已完成%s%%" % t)
-			self.rate_gauge.SetValue( t )
-		elif t == u"完成":
-			self.rate_staticText.SetLabel("%s" % t)
+		#msg是EocStartThread线程执行进度的百分比
+		if isinstance(msg, int):#如果是数字，说明线程正在执行，更新进度条
+			self.rate_staticText.SetLabel(u"已完成%s%%" % msg)
+			self.rate_gauge.SetValue( msg )
+		elif msg == u"完成":
+			self.rate_staticText.SetLabel("%s" % msg)
 			self.rate_gauge.SetValue( 100 )
 			self.EocStartButton.Enable()
 		else:
-			self.rate_staticText.SetLabel("%s" % t)
+			self.rate_staticText.SetLabel("%s" % msg)
+
+class VLAN_Panel ( eoclib.gui.VLAN_Panel ):
+	def __init__( self, parent ):
+		eoclib.gui.VLAN_Panel.__init__ ( self, parent )
+		#读取配置信息
+		start_ip, end_ip, start_pvid, end_pvid = eoclib.func.getconfig()
+		self.StartPVID.SetValue(start_pvid)
+		self.EndPVID.SetValue(end_pvid)
+
+	def eocstart( self, event ):
+		event.GetEventObject().Disable()#把执行本函数的按钮禁用掉
+		#因为用户可能修改了配置，故需要重新获取一次配置信息，并在线程执行前保存至配置文件
+		start_ip   = str(Main_Frame.StartIP.GetValue())
+		end_ip     = str(Main_Frame.EndIP.GetValue())
+		start_pvid = str(VLAN_Panel.StartPVID.GetValue())
+		end_pvid   = str(VLAN_Panel.EndPVID.GetValue())
+		eoclib.func.saveconfig(start_ip, end_ip, start_pvid, end_pvid)
+		EocStartThread()
+		self.rate_staticText.SetLabel(u"开始自动配置")
+
+class Log_Panel ( eoclib.gui.Log_Panel ):
+	def __init__( self, parent ):
+		eoclib.gui.Log_Panel.__init__ ( self, parent )
+		#将系统标准输出重定向
+		redir=RedirectText(self.LogRedirect)#gui布局代码尚未更新，暂时定向到这个文本框
+		sys.stdout=redir
+
 
 #创建新的EocStartThread类，将自动配置的代码封装在一个线程中
 class EocStartThread(Thread):
@@ -87,7 +93,7 @@ class EocStartThread(Thread):
 		self.setDaemon(True)#设置本线程随主线程一起结束。
 		self.start()
 	def run(self):
-		lib_eoc_func.eoc_auto_main("gui")
+		eoclib.func.eoc_auto_main("gui")
 
 #下面是主程序
 if len(sys.argv) == 1:#如果程序不带参数运行，默认为GUI模式
@@ -99,8 +105,8 @@ if len(sys.argv) == 2:#如果程序带一个参数运行，则判断模式
 		print u"    -console   命令行模式"
 	if sys.argv[1] == "-gui":
 		app = wx.App()
-		gui = MainGUI(None)
+		gui = Main_Frame(None)
 		gui.Show()
 		app.MainLoop()
 	if sys.argv[1] == "-console":
-		lib_eoc_func.eoc_auto_main("console")
+		eoclib.func.eoc_auto_main("console")
