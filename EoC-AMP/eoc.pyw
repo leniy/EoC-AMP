@@ -38,15 +38,17 @@ class Main_Frame ( eoclib.gui.Main_Frame ):
 	def __init__( self, parent ):
 		#创建界面
 		eoclib.gui.Main_Frame.__init__ ( self, parent )
-		nb = self.m_notebook1
-		nb.AddPage(VLAN_Panel(nb), "VLAN")
-		nb.AddPage(Log_Panel(nb), "Log")
 		#读取配置信息
 		start_ip, end_ip, start_pvid, end_pvid = eoclib.func.getconfig()
 		self.StartIP.SetValue(start_ip)
 		self.EndIP.SetValue(end_ip)
+		self.StartPVID.SetValue(start_pvid)
+		self.EndPVID.SetValue(end_pvid)
 		#监听来自update的消息，利用updateDisplay函数更新窗口
 		pub.subscribe(self.updateDisplay, "update")
+		#将系统标准输出重定向
+		redir=RedirectText(self.LogRedirect)#gui布局代码尚未更新，暂时定向到这个文本框
+		sys.stdout=redir
 	def updateDisplay(self, msg):#msg是监听自update的消息
 		#msg是EocStartThread线程执行进度的百分比
 		if isinstance(msg, int):#如果是数字，说明线程正在执行，更新进度条
@@ -58,33 +60,16 @@ class Main_Frame ( eoclib.gui.Main_Frame ):
 			self.EocStartButton.Enable()
 		else:
 			self.rate_staticText.SetLabel("%s" % msg)
-
-class VLAN_Panel ( eoclib.gui.VLAN_Panel ):
-	def __init__( self, parent ):
-		eoclib.gui.VLAN_Panel.__init__ ( self, parent )
-		#读取配置信息
-		start_ip, end_ip, start_pvid, end_pvid = eoclib.func.getconfig()
-		self.StartPVID.SetValue(start_pvid)
-		self.EndPVID.SetValue(end_pvid)
-
 	def eocstart( self, event ):
 		event.GetEventObject().Disable()#把执行本函数的按钮禁用掉
 		#因为用户可能修改了配置，故需要重新获取一次配置信息，并在线程执行前保存至配置文件
-		start_ip   = str(Main_Frame.StartIP.GetValue())
-		end_ip     = str(Main_Frame.EndIP.GetValue())
-		start_pvid = str(VLAN_Panel.StartPVID.GetValue())
-		end_pvid   = str(VLAN_Panel.EndPVID.GetValue())
+		start_ip   = str(self.StartIP.GetValue())
+		end_ip     = str(self.EndIP.GetValue())
+		start_pvid = str(self.StartPVID.GetValue())
+		end_pvid   = str(self.EndPVID.GetValue())
 		eoclib.func.saveconfig(start_ip, end_ip, start_pvid, end_pvid)
 		EocStartThread()
 		self.rate_staticText.SetLabel(u"开始自动配置")
-
-class Log_Panel ( eoclib.gui.Log_Panel ):
-	def __init__( self, parent ):
-		eoclib.gui.Log_Panel.__init__ ( self, parent )
-		#将系统标准输出重定向
-		redir=RedirectText(self.LogRedirect)#gui布局代码尚未更新，暂时定向到这个文本框
-		sys.stdout=redir
-
 
 #创建新的EocStartThread类，将自动配置的代码封装在一个线程中
 class EocStartThread(Thread):

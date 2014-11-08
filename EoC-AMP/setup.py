@@ -28,6 +28,6 @@ setup(
 	author = u"Leniy(Leniy Tsan)",
 	data_files = [('res', ['res/author.png'])],
 	#console = [{'script': "eoc_main_console.py"}],
-	#console = [{'script': "eoc_main.py"}],
-	windows = [{'script': "eoc.pyw",'icon_resources': [(1, "res/author.ico")]}],
+	#console = [{'script': "eoc.py"}],
+	windows = [{'script': "eoc.py",'icon_resources': [(1, "res/author.ico")]}],
 )

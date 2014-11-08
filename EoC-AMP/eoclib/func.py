@@ -23,6 +23,7 @@ termEocCnuDevName = ''        #Cnu设备编号，例如“2/3”
 termEocCnuDevMac = ''         #Cnu的mac地址
 termEocCnuDevModel = ''       #Cnu的型号
 termEocCnuEtherVlanPVID = ''  #Cnu某个端口的pvid
+termEocCnuEtherPortOperStatus = '' #这个端口的状态：开启或关闭
 running_mode = 'console'      #运行模式，判断当前是在console中还是在gui中运行
 
 #==================== 创建基本功能函数（函数默认为ip可以正常访问的情况，异常状态后续处理） ====================
@@ -51,11 +52,11 @@ def getconfig():
 		start_pvid = configlist[2]
 		end_pvid   = configlist[3]
 	except:
-		saveconfig("50","151","2000","2499")
-		start_ip   = "50"
-		end_ip     = "151"
+		saveconfig("2","120","2000","2999")
+		start_ip   = "2"
+		end_ip     = "120"
 		start_pvid = "2000"
-		end_pvid   = "2499"
+		end_pvid   = "2999"
 	return start_ip, end_ip, start_pvid, end_pvid
 
 
@@ -411,7 +412,7 @@ def eoc_auto_main(runtype = "console"):
 				temppvid = pvid_notused_list[0] #pvid设置为第一个尚未使用的值
 				pvid_notused_list = pvid_notused_list[1:] #把第一个从未使用的列表中去掉
 				set_port_pvid(ip,cookies,str(port_index1),str(temppvid))
-				set_port_pvid(ip,cookies,str(port_index2),str(1000))  #1000为点播的vlan
+				set_port_pvid(ip,cookies,str(port_index2),str(temppvid - 1000))  #1000为点播的vlan
 				set_port_pvid(ip,cookies,str(port_index3),str(1))     #1为未配置时的默认值，此时端口暂不开启
 				set_port_pvid(ip,cookies,str(port_index4),str(1))     #1为未配置时的默认值，此时端口暂不开启
 				#print ip + ", " + temp_cnu['Cnu_name'] + "   pvid: " + str(temppvid)
