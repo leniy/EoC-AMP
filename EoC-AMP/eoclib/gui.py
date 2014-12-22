@@ -51,7 +51,7 @@ class Main_Frame ( wx.Frame ):
 		self.StartIP.SetMaxLength( 0 ) 
 		gSizer2.Add( self.StartIP, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.EndIP = wx.TextCtrl( self, wx.ID_ANY, u"120", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.EndIP = wx.TextCtrl( self, wx.ID_ANY, u"150", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.EndIP.SetMaxLength( 0 ) 
 		gSizer2.Add( self.EndIP, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
@@ -62,7 +62,7 @@ class Main_Frame ( wx.Frame ):
 		fgSizer2.Add( self.m_bitmap1, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		
-		sbSizer1.Add( fgSizer2, 1, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
+		sbSizer1.Add( fgSizer2, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
 		
 		
 		fgSizer.Add( sbSizer1, 1, wx.EXPAND|wx.ALIGN_CENTER_VERTICAL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
@@ -77,19 +77,19 @@ class Main_Frame ( wx.Frame ):
 		self.m_staticText4.Wrap( -1 )
 		fgSizer4.Add( self.m_staticText4, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.StartPVID = wx.TextCtrl( self, wx.ID_ANY, u"2001", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.StartPVID = wx.TextCtrl( self, wx.ID_ANY, u"2000", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.StartPVID.SetMaxLength( 0 ) 
 		fgSizer4.Add( self.StartPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
-		self.EndPVID = wx.TextCtrl( self, wx.ID_ANY, u"2499", wx.DefaultPosition, wx.DefaultSize, 0 )
+		self.EndPVID = wx.TextCtrl( self, wx.ID_ANY, u"2999", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.EndPVID.SetMaxLength( 0 ) 
 		fgSizer4.Add( self.EndPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		
-		sbSizer2.Add( fgSizer4, 1, wx.EXPAND|wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+		sbSizer2.Add( fgSizer4, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
 		
 		
-		fgSizer.Add( sbSizer2, 1, wx.EXPAND, 5 )
+		fgSizer.Add( sbSizer2, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
 		
 		sbSizer3 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"自动检索并设置" ), wx.VERTICAL )
 		
@@ -99,7 +99,7 @@ class Main_Frame ( wx.Frame ):
 		
 		self.EocStartButton = wx.Button( self, wx.ID_ANY, u"开始执行", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.EocStartButton.SetDefault() 
-		fgSizer51.Add( self.EocStartButton, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
+		fgSizer51.Add( self.EocStartButton, 0, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
 		
 		self.rate_gauge = wx.Gauge( self, wx.ID_ANY, 100, wx.DefaultPosition, wx.Size( -1,-1 ), 0 )
 		self.rate_gauge.SetValue( 0 ) 
@@ -110,18 +110,23 @@ class Main_Frame ( wx.Frame ):
 		fgSizer51.Add( self.rate_staticText, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		
-		sbSizer3.Add( fgSizer51, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALL, 5 )
+		sbSizer3.Add( fgSizer51, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
 		
 		
-		fgSizer.Add( sbSizer3, 1, wx.EXPAND, 5 )
+		fgSizer.Add( sbSizer3, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
 		
 		sbSizer4 = wx.StaticBoxSizer( wx.StaticBox( self, wx.ID_ANY, u"Log记录区" ), wx.VERTICAL )
 		
-		self.LogRedirect = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,-1 ), wx.TE_MULTILINE )
-		sbSizer4.Add( self.LogRedirect, 1, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.EXPAND, 5 )
+		bSizer1 = wx.BoxSizer( wx.VERTICAL )
+		
+		self.LogRedirect = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,-1 ), wx.TE_MULTILINE|wx.TE_READONLY )
+		bSizer1.Add( self.LogRedirect, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
 		
 		
-		fgSizer.Add( sbSizer4, 1, wx.EXPAND|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL, 5 )
+		sbSizer4.Add( bSizer1, 1, wx.EXPAND, 5 )
+		
+		
+		fgSizer.Add( sbSizer4, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
 		
 		
 		self.SetSizer( fgSizer )

@@ -2,8 +2,8 @@
 #山东广电网络集团-EoC管理软件
 #作者：Leniy(Leniy Tsan)
 #创建日期：2014.03.24
-#更新日期：2014.07.22
-#修订版本：第31次修订
+#更新日期：2014.11.11
+#修订版本：第33次修订
 
 from distutils.core import setup
 import py2exe, sys, os
@@ -26,8 +26,9 @@ setup(
 	options = options,     
 	zipfile=None,
 	author = u"Leniy(Leniy Tsan)",
-	data_files = [('res', ['res/author.png'])],
+	data_files = [('res', ['res/author.png',"res/author.ico"])],
 	#console = [{'script': "eoc_main_console.py"}],
 	#console = [{'script': "eoc.py"}],
-	windows = [{'script': "eoc.py",'icon_resources': [(1, "res/author.ico")]}],
+	windows = [{'script': "eoc.py",'icon_resources': [(1, "res/author.ico")]}]
+	#windows = [{'script': "eoc.py"}]
 )

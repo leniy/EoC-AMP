@@ -2,8 +2,8 @@
 #山东广电网络集团-EoC管理软件
 #作者：Leniy(Leniy Tsan)
 #创建日期：2014.03.24
-#更新日期：2014.07.29
-#修订版本：第32次修订
+#更新日期：2014.12.10
+#修订版本：第35次修订
 
 import urllib2
 import hashlib
@@ -12,12 +12,11 @@ import time
 import wx
 from wx.lib.pubsub import setupkwargs
 from wx.lib.pubsub import pub
-#from wx.lib.pubsub import Publisher #用这条命令会导致py2exe生成的程序报错
-#from wx.lib.pubsub import setuparg1  #换成这个后，需要把代码中的Publisher()换成Publisher
 
 
 #==================== 定义全局变量 ====================
 
+mib_obj_enum = {}             #下面几个termEoC什么的,就是从这里面提取到的
 termEocCnuIndex = ''          #Eoc终端设备Cnu的索引
 termEocCnuDevName = ''        #Cnu设备编号，例如“2/3”
 termEocCnuDevMac = ''         #Cnu的mac地址
@@ -92,7 +91,7 @@ def logineoc(ip, user, password):
 
 
 
-#函数功能：获取设备中各个参数的唯一编号
+#函数功能：获取设备中各个参数的唯一mib编号
 #函数输入：ip、cookies
 #函数返回：错误代码（编号值直接赋值给全局变量，不用返回）
 def get_dev_unique_number(ip, cookies):
@@ -102,6 +101,7 @@ def get_dev_unique_number(ip, cookies):
 	global termEocCnuDevMac
 	global termEocCnuDevModel
 	global termEocCnuEtherVlanPVID
+	global mib_obj_enum
 
 	opener = urllib2.build_opener(cookies)
 	request = urllib2.Request(
@@ -113,6 +113,8 @@ def get_dev_unique_number(ip, cookies):
 		response = response.replace('window.top.__mib_oids = ','')
 		response = response.replace(';','')
 		response = eval(response)
+		mib_obj_enum = response
+
 		termEocCnuIndex         = str(response['termEocCnuIndex'])
 		termEocCnuDevName       = str(response['termEocCnuDevName'])
 		termEocCnuDevMac        = str(response['termEocCnuDevMac'])
@@ -128,20 +130,16 @@ def get_dev_unique_number(ip, cookies):
 #函数输入：ip、cookies
 #函数返回：dict格式的cnu_devlist列表、错误代码（出错时，第一个返回值是一个包含错误原因的字符串）
 def get_cnu_devlist(ip, cookies):
-	global termEocCnuIndex
-	global termEocCnuDevName
-	global termEocCnuDevMac
-	global termEocCnuDevModel
-	get_cnu_devlist_poststr = termEocCnuIndex + ';' + termEocCnuDevName + ';' + termEocCnuDevMac + ';' + termEocCnuDevModel
+	global mib_obj_enum
 
 	opener = urllib2.build_opener(cookies)
 	request = urllib2.Request(
-		url	 = 'http://' + ip + '/g',
+		url	 = 'http://%s/g' % (ip),
 		headers = {
 			'Content-Type' : 'application/x-www-form-urlencoded',
-			'Referer' : 'http://' + ip + '/cnu_devlist.html',
+			'Referer' : 'http://%s/cnu_devlist.html' % (ip),
 		},
-		data	= 'entry=a:0:0;' + get_cnu_devlist_poststr
+		data	= 'entry=a:0:0;%s;%s;%s;%s' % (mib_obj_enum['termEocCnuIndex'], mib_obj_enum['termEocCnuDevName'], mib_obj_enum['termEocCnuDevMac'], mib_obj_enum['termEocCnuDevModel'])
 	)
 	try:
 		response = opener.open(request)
@@ -168,17 +166,16 @@ def get_cnu_devlist(ip, cookies):
 #函数输入：ip、cookies、port_index
 #函数返回：int格式的pvid（不必返回错误代码。pvid > 1 为正常设置，pvid = 1 为尚未设置，pvid = -9999 为系统返回错误）
 def get_port_pvid(ip, cookies, port_index):
-	global termEocCnuEtherVlanPVID
-	get_port_pvid_poststr = termEocCnuEtherVlanPVID
+	global mib_obj_enum
 
 	opener = urllib2.build_opener(cookies)
 	request = urllib2.Request(
-		url	 = 'http://' + ip + '/g',
+		url	 = 'http://%s/g' % (ip),
 		headers = {
 			'Content-Type' : 'application/x-www-form-urlencoded',
-			'Referer' : 'http://' + ip + '/cnu_port_config.html',
+			'Referer' : 'http://%s/cnu_port_config.html' % (ip),
 		},
-		data	= 'entry=g:' + port_index + ':0;' + get_port_pvid_poststr
+		data	= 'entry=g:%s:0;%s' % (port_index, mib_obj_enum['termEocCnuEtherVlanPVID'])
 	)
 	#port_index设置原理：
 	#终端设备共有5个端口，分别为1个Cable、4个FE
@@ -196,7 +193,7 @@ def get_port_pvid(ip, cookies, port_index):
 		#print cnu_ajax_portconfig
 		if cnu_ajax_portconfig['errcode'] == 0:
 			cnu_portconfig = cnu_ajax_portconfig['entry']
-			pvid = cnu_portconfig[0][termEocCnuEtherVlanPVID]
+			pvid = cnu_portconfig[0][str(mib_obj_enum['termEocCnuEtherVlanPVID'])]
 			return pvid
 		elif cnu_ajax_portconfig['errcode'] == -1:
 			#tempstr = cnu_ajax_portconfig['errinfo']
@@ -235,9 +232,9 @@ def show_eochead_info(ip):
 				Cnu_model = cnu_dev[termEocCnuDevModel]
 
 				port_index1 = str(100000 + Cnu_index + 1)  #获取第一个FE端口的索引号
-				port_index2 = str(100000 + Cnu_index + 2)  #获取第一个FE端口的索引号
-				port_index3 = str(100000 + Cnu_index + 3)  #获取第一个FE端口的索引号
-				port_index4 = str(100000 + Cnu_index + 4)  #获取第一个FE端口的索引号
+				port_index2 = str(100000 + Cnu_index + 2)  #获取第二个FE端口的索引号
+				port_index3 = str(100000 + Cnu_index + 3)  #获取第三个FE端口的索引号
+				port_index4 = str(100000 + Cnu_index + 4)  #获取第四个FE端口的索引号
 
 				Cnu_pvid1 = get_port_pvid(ip,cookies,port_index1)  #注意，这个是int格式的数字
 				Cnu_pvid2 = get_port_pvid(ip,cookies,port_index2)  #注意，这个是int格式的数字
@@ -316,6 +313,16 @@ def eoc_auto_main(runtype = "console"):
 	start_pvid = int(start_pvid)
 	end_pvid   = int(end_pvid)
 
+	#把所有的头端ip放到一个列表中
+	all_ip_list = []
+	for ip_last in range(start_ip,end_ip + 1):       #城区头端
+		#if ip_last >= 141 and ip_last <= 160 :   #特殊原因，这20个ip地址需要跳过去
+		#	continue
+		ip = 'x.x.x.' + str(ip_last)
+		all_ip_list.append(ip)
+
+	#把所有宽带VLAN放到一个列表中（点播VLAN直接减1000计算）
+	all_vlan_list = range(start_pvid,end_pvid + 1)
 
 	#global all_head_info_list
 	#global unset_cnu_count
@@ -323,8 +330,6 @@ def eoc_auto_main(runtype = "console"):
 	unset_cnu_count = 0 #用来定义有多少个cnu设备尚未设置pvid
 
 	output_csv_file_name = time.strftime('logs/%Y%m%d_%H%M%S.csv',time.localtime(time.time()))#文件名是导出文件的完整文件名，包含扩展名
-
-	#wx.MessageBox(u"开始搜索，界面可能处于假死状态，请耐心等待。\n\n执行完成后，数据将保存在csv文件中",u"警告",wx.OK|wx.ICON_INFORMATION)
 
 	if runtype == "gui":
 		rate = 0#程序进度的百分比
@@ -335,14 +340,14 @@ def eoc_auto_main(runtype = "console"):
 	s = '"Eoc Head IP","Cnu Index","Cnu Name","Cnu MAC","Cnu Modal","Cnu PVID1","Cnu PVID2","Cnu PVID3","Cnu PVID4"\n'
 	print s
 	file_object.write(s)
-                
-	for ip_last in range(start_ip,end_ip + 1):
-		ip = 'x.x.x.' + str(ip_last)
+
+	for ip in all_ip_list:
 		temptemptemp = show_eochead_info(ip)
 		all_head_info_list.extend(temptemptemp)
 		if runtype == "gui":
-			rate = 100.0 * ( ip_last - start_ip + 1 ) / ( end_ip - start_ip +1 )
-			print ip_last,start_ip,end_ip,( ip_last - start_ip + 1 ),( end_ip - start_ip +1 ),rate,int(rate)
+			#rate = 100.0 * ( ip_last - start_ip + 1 ) / ( end_ip - start_ip +1 )
+			rate = 100.0 * ( all_ip_list.index(ip) ) / ( len(all_ip_list) )
+			#print ip_last,start_ip,end_ip,( ip_last - start_ip + 1 ),( end_ip - start_ip +1 ),rate,int(rate)
 			#wx.CallAfter(Publisher().sendMessage, "update", int(rate))
 			wx.CallAfter(pub.sendMessage, "update", msg = int(rate))
 
@@ -370,8 +375,8 @@ def eoc_auto_main(runtype = "console"):
 	file_object.close()
 	#print all_head_info_list
 
-	if runtype == "gui":
-		wx.MessageBox(u"搜索完成，共找到" + str(len(all_head_info_list)) + u"个设备\n\n其中，" + str(unset_cnu_count) + u"台设备尚未设置pvid",u"通知",wx.OK|wx.ICON_INFORMATION)
+#	if runtype == "gui":
+#		wx.MessageBox(u"搜索完成，共找到" + str(len(all_head_info_list)) + u"个设备\n\n其中，" + str(unset_cnu_count) + u"台设备尚未设置pvid",u"通知",wx.OK|wx.ICON_INFORMATION)
 
 
 	#global all_head_info_list
@@ -412,11 +417,13 @@ def eoc_auto_main(runtype = "console"):
 				temppvid = pvid_notused_list[0] #pvid设置为第一个尚未使用的值
 				pvid_notused_list = pvid_notused_list[1:] #把第一个从未使用的列表中去掉
 				set_port_pvid(ip,cookies,str(port_index1),str(temppvid))
+				print "set a pvid " + str(temppvid) + " in " + str(ip)
 				set_port_pvid(ip,cookies,str(port_index2),str(temppvid - 1000))  #1000为点播的vlan
 				set_port_pvid(ip,cookies,str(port_index3),str(1))     #1为未配置时的默认值，此时端口暂不开启
 				set_port_pvid(ip,cookies,str(port_index4),str(1))     #1为未配置时的默认值，此时端口暂不开启
 				#print ip + ", " + temp_cnu['Cnu_name'] + "   pvid: " + str(temppvid)
 	if runtype == "gui":
-		wx.MessageBox(u"pvid设置成功",u"通知",wx.OK|wx.ICON_INFORMATION)
+		wx.MessageBox(u"搜索完成，共找到" + str(len(all_head_info_list)) + u"个设备\n\n其中，" + str(unset_cnu_count) + u"台未配置，现已配置完成",u"通知",wx.OK|wx.ICON_INFORMATION)
+#		wx.MessageBox(u"pvid设置成功",u"通知",wx.OK|wx.ICON_INFORMATION)
 		#wx.CallAfter(Publisher().sendMessage, "update", u"完成")
 		wx.CallAfter(pub.sendMessage, "update", msg = u"完成")
