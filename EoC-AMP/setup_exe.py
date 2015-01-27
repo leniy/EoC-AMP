@@ -26,7 +26,7 @@ setup(
 	options = options,     
 	zipfile=None,
 	author = u"Leniy(Leniy Tsan)",
-	data_files = [('res', ['res/author.png',"res/author.ico"])],
+	data_files = [('res', ['res/author.png',"res/author.ico"]),('', ['list.csv'])],
 	#console = [{'script': "eoc_main_console.py"}],
 	#console = [{'script': "eoc.py"}],
 	windows = [{'script': "eoc.py",'icon_resources': [(1, "res/author.ico")]}]

@@ -1,18 +1,16 @@
-# -*- coding: UTF-8 -*-
-#山东广电网络集团-EoC管理软件
-#作者：Leniy(Leniy Tsan)
+# -*- coding: utf-8 -*- 
+#作者：LeniyTsan
+#时间：2014-07-17
 
-eoc_inf = {
-	"create_date" : "2014.03.24",
-	"update_date" : "2015.01.23",
-	"version"     : "1.33.01.23",
-	"description" : u"山东广电网络集团-EoC管理软件",
-	"name"        : "EoC-AMP",
-	"author"      : u"Leniy(Leniy Tsan)",
-	}
+import wx
+from wx.lib.embeddedimage import PyEmbeddedImage
 
-#下面是base64格式的logo图片
-eoc_logo = """
+class MyFrame1 ( wx.Frame ):
+	def __init__( self, parent ):
+		wx.Frame.__init__ ( self, parent )
+		self.SetBackgroundColour( wx.SystemSettings.GetColour( wx.SYS_COLOUR_3DLIGHT ) )
+		bSizer1 = wx.BoxSizer( wx.VERTICAL )
+		b64 = """
 iVBORw0KGgoAAAANSUhEUgAAADUAAAA1EAYAAACxdn8zAAAABmJLR0T///////8JWPfcAAAACXBI
 WXMAAABIAAAASABGyWs+AAAACXZwQWcAAAA1AAAANQDjVOmhAAAWFklEQVR42u1ceZxO9f5/n+eZ
 ecy+mBmyDGbsRDGGRCFLSiQq/UTU7bbcEqkkqatyS5KXGyrltqlIsoUbEso6EWYwU7axjBnLrMw+
@@ -116,3 +114,14 @@ ZxsAyOiW0Q1VpPJJ5ZMA4GDawTQASC5MLgSACxMuiBAdLAHZauEylmUsA4CSe0sM//vZvE3zNgCw
 78y+MwCwInJFJAC0+aiN4f9i9h3ZdwQAPgv/LBwAcmflzgJ+pxyWSf2n7Gzjerx63/8DamQ0UwJL
 MKQAAAAASUVORK5CYII=
 """
+		bitmap = PyEmbeddedImage(b64).GetBitmap()
+		self.m_bitmap1 = wx.StaticBitmap( self, wx.ID_ANY, bitmap )
+		bSizer1.Add( self.m_bitmap1, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL, 5 )
+		self.SetSizer( bSizer1 )
+		self.Layout()
+		bSizer1.Fit( self )
+		self.Centre( wx.BOTH )
+app = wx.App()
+gui = MyFrame1(None)
+gui.Show()
+app.MainLoop()

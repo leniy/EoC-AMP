@@ -2,30 +2,59 @@
 #山东广电网络集团-EoC管理软件
 #作者：Leniy(Leniy Tsan)
 #创建日期：2014.03.24
-#更新日期：2014.12.10
-#修订版本：第35次修订
+#更新日期：2015.01.26
+#修订版本：第37次修订
 
 import urllib2
 import hashlib
 import socket
+import struct
 import time
 import wx
+import re
 from wx.lib.pubsub import setupkwargs
 from wx.lib.pubsub import pub
-
 
 #==================== 定义全局变量 ====================
 
 mib_obj_enum = {}             #下面几个termEoC什么的,就是从这里面提取到的
-termEocCnuIndex = ''          #Eoc终端设备Cnu的索引
-termEocCnuDevName = ''        #Cnu设备编号，例如“2/3”
-termEocCnuDevMac = ''         #Cnu的mac地址
-termEocCnuDevModel = ''       #Cnu的型号
-termEocCnuEtherVlanPVID = ''  #Cnu某个端口的pvid
-termEocCnuEtherPortOperStatus = '' #这个端口的状态：开启或关闭
 running_mode = 'console'      #运行模式，判断当前是在console中还是在gui中运行
+#termEocCnuIndex = ''          #Eoc终端设备Cnu的索引
+#termEocCnuDevName = ''        #Cnu设备编号，例如“2/3”
+#termEocCnuDevMac = ''         #Cnu的mac地址
+#termEocCnuDevModel = ''       #Cnu的型号
+#termEocCnuEtherVlanPVID = ''  #Cnu某个端口的pvid
+#termEocCnuEtherPortOperStatus = '' #这个端口的状态：开启或关闭
 
 #==================== 创建基本功能函数（函数默认为ip可以正常访问的情况，异常状态后续处理） ====================
+
+#函数功能：ip转换数字
+#函数输入：字符串格式ip
+#函数返回：int或long格式数字
+def ip2int(ip):
+	return socket.htonl(struct.unpack('I', socket.inet_aton(ip))[0])
+
+#函数功能：数字转换ip
+#函数输入：int或long格式数字
+#函数返回：字符串格式ip
+def int2ip(i):
+	return socket.inet_ntoa(struct.pack('I', socket.htonl(i)))
+
+#函数功能：从list.csv中获取全部待配置头端的IP范围
+#函数输入：无
+#函数返回：包含全部ip的list
+def getiplist():
+	reip = re.compile(r"((?:\d+\.){3}\d+),((?:\d+\.){3}\d+)", re.DOTALL)
+	listfile = open('list.csv')
+	all_ip_region = []
+	all_ip_list = []
+	for line in listfile:
+		all_ip_region.extend(reip.findall(line))
+	listfile.close()
+	for startip,endip in all_ip_region:
+		for ip_num in range(ip2int(startip),ip2int(endip)+1):
+			all_ip_list.append(int2ip(ip_num))
+	return all_ip_list
 
 #函数功能：保存配置信息
 #函数输入：四个元素(str格式)
@@ -35,14 +64,12 @@ def saveconfig(start_ip, end_ip, start_pvid, end_pvid):
 	configfile.write(start_ip + "," + end_ip + "," + start_pvid + "," + end_pvid)
 	configfile.close()
 
-
-
 #函数功能：读取配置信息
-#函数输入：无
+#函数输入：配置文件名称
 #函数返回：四个元素(str格式)
-def getconfig():
+def getconfig(config_file = 'config.txt'):
 	try:
-		configfile = open('config.txt')
+		configfile = open(config_file)
 		configlist = configfile.readline()
 		configfile.close()
 		configlist = configlist.split(',')
@@ -96,11 +123,11 @@ def logineoc(ip, user, password):
 #函数返回：错误代码（编号值直接赋值给全局变量，不用返回）
 def get_dev_unique_number(ip, cookies):
 	#Eoc头端中，各个项目采用数字表示，这儿对其意义进行定义
-	global termEocCnuIndex
-	global termEocCnuDevName
-	global termEocCnuDevMac
-	global termEocCnuDevModel
-	global termEocCnuEtherVlanPVID
+	#global termEocCnuIndex
+	#global termEocCnuDevName
+	#global termEocCnuDevMac
+	#global termEocCnuDevModel
+	#global termEocCnuEtherVlanPVID
 	global mib_obj_enum
 
 	opener = urllib2.build_opener(cookies)
@@ -115,11 +142,11 @@ def get_dev_unique_number(ip, cookies):
 		response = eval(response)
 		mib_obj_enum = response
 
-		termEocCnuIndex         = str(response['termEocCnuIndex'])
-		termEocCnuDevName       = str(response['termEocCnuDevName'])
-		termEocCnuDevMac        = str(response['termEocCnuDevMac'])
-		termEocCnuDevModel      = str(response['termEocCnuDevModel'])
-		termEocCnuEtherVlanPVID = str(response['termEocCnuEtherVlanPVID'])
+		#termEocCnuIndex         = str(response['termEocCnuIndex'])
+		#termEocCnuDevName       = str(response['termEocCnuDevName'])
+		#termEocCnuDevMac        = str(response['termEocCnuDevMac'])
+		#termEocCnuDevModel      = str(response['termEocCnuDevModel'])
+		#termEocCnuEtherVlanPVID = str(response['termEocCnuEtherVlanPVID'])
 		return 0
 	except:
 		print 'Error: ' + ip + ' mib_obj_enum.js can NOT be downloaded'
@@ -207,10 +234,11 @@ def get_port_pvid(ip, cookies, port_index):
 #函数输入：字符串格式的ip
 #函数返回：单个头端Eoc中，所有Cnu的信息的列表head_info_list（单个Cnu的信息，以dict格式存储于list中）
 def show_eochead_info(ip):
-	global termEocCnuIndex
-	global termEocCnuDevName
-	global termEocCnuDevMac
-	global termEocCnuDevModel
+	global mib_obj_enum
+	#global termEocCnuIndex
+	#global termEocCnuDevName
+	#global termEocCnuDevMac
+	#global termEocCnuDevModel
 	#global termEocCnuEtherVlanPVID
 
 	cookies,errorcode1 = logineoc(ip,'xxxxxxxxx','xxxxxxxxxxx')  #如果登陆出错，返回错误代码，并打印错误原因
@@ -226,10 +254,10 @@ def show_eochead_info(ip):
 			for cnu_dev in cnu_devlist:
 
 				Eoc_ip    = ip
-				Cnu_index = cnu_dev[termEocCnuIndex]  #注意，这个是int格式的数字
-				Cnu_name  = 'Cnu ' + cnu_dev[termEocCnuDevName]
-				Cnu_mac   = cnu_dev[termEocCnuDevMac]
-				Cnu_model = cnu_dev[termEocCnuDevModel]
+				Cnu_index = cnu_dev[str(mib_obj_enum['termEocCnuIndex'])]  #注意，这个是int格式的数字
+				Cnu_name  = 'Cnu ' + cnu_dev[str(mib_obj_enum['termEocCnuDevName'])]
+				Cnu_mac   = cnu_dev[str(mib_obj_enum['termEocCnuDevMac'])]
+				Cnu_model = cnu_dev[str(mib_obj_enum['termEocCnuDevModel'])]
 
 				port_index1 = str(100000 + Cnu_index + 1)  #获取第一个FE端口的索引号
 				port_index2 = str(100000 + Cnu_index + 2)  #获取第二个FE端口的索引号
@@ -277,9 +305,10 @@ def show_eochead_info(ip):
 #函数输入：ip、cookies、port_index（str格式）、pvid（str格式）
 #函数返回：int格式的错误代码
 def set_port_pvid(ip, cookies, port_index, pvid):
-	global termEocCnuEtherVlanPVID
+	global mib_obj_enum
+	#global termEocCnuEtherVlanPVID
 	get_dev_unique_number(ip,cookies) #因为获取全部ip的cnu列表的时候，这些设备独立编码已经被覆盖了，所以设置pvid的时候要重新设置一次并保存回全局变量中
-	set_port_pvid_poststr = termEocCnuEtherVlanPVID + '.' + port_index + '=' + pvid
+	set_port_pvid_poststr = str(mib_obj_enum['termEocCnuEtherVlanPVID']) + '.' + port_index + '=' + pvid
 	#print set_port_pvid_poststr
 
 	opener = urllib2.build_opener(cookies)
@@ -308,18 +337,19 @@ def set_port_pvid(ip, cookies, port_index, pvid):
 def eoc_auto_main(runtype = "console"):
 	#由于本部分功能与gui窗口属于不同的线程，为了防止冲突，配置信息直接从配置文件中获取
 	start_ip, end_ip, start_pvid, end_pvid = getconfig()
-	start_ip   = int(start_ip)
-	end_ip     = int(end_ip)
+#	start_ip   = int(start_ip)
+#	end_ip     = int(end_ip)
 	start_pvid = int(start_pvid)
 	end_pvid   = int(end_pvid)
 
 	#把所有的头端ip放到一个列表中
 	all_ip_list = []
-	for ip_last in range(start_ip,end_ip + 1):       #城区头端
-		#if ip_last >= 141 and ip_last <= 160 :   #特殊原因，这20个ip地址需要跳过去
-		#	continue
-		ip = 'x.x.x.' + str(ip_last)
-		all_ip_list.append(ip)
+#	for ip_last in range(start_ip,end_ip + 1):       #城区头端
+#		#if ip_last >= 141 and ip_last <= 160 :   #特殊原因，这20个ip地址需要跳过去
+#		#	continue
+#		ip = 'x.x.x.' + str(ip_last)
+#		all_ip_list.append(ip)
+	all_ip_list.extend(getiplist())
 
 	#把所有宽带VLAN放到一个列表中（点播VLAN直接减1000计算）
 	all_vlan_list = range(start_pvid,end_pvid + 1)

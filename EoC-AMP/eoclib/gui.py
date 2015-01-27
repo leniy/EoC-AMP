@@ -49,10 +49,14 @@ class Main_Frame ( wx.Frame ):
 		
 		self.StartIP = wx.TextCtrl( self, wx.ID_ANY, u"2", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.StartIP.SetMaxLength( 0 ) 
+		self.StartIP.Enable( False )
+		
 		gSizer2.Add( self.StartIP, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		self.EndIP = wx.TextCtrl( self, wx.ID_ANY, u"150", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.EndIP.SetMaxLength( 0 ) 
+		self.EndIP.Enable( False )
+		
 		gSizer2.Add( self.EndIP, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		
@@ -79,10 +83,14 @@ class Main_Frame ( wx.Frame ):
 		
 		self.StartPVID = wx.TextCtrl( self, wx.ID_ANY, u"2000", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.StartPVID.SetMaxLength( 0 ) 
+		self.StartPVID.Enable( False )
+		
 		fgSizer4.Add( self.StartPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		self.EndPVID = wx.TextCtrl( self, wx.ID_ANY, u"2999", wx.DefaultPosition, wx.DefaultSize, 0 )
 		self.EndPVID.SetMaxLength( 0 ) 
+		self.EndPVID.Enable( False )
+		
 		fgSizer4.Add( self.EndPVID, 0, wx.ALL|wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL, 5 )
 		
 		
@@ -119,7 +127,7 @@ class Main_Frame ( wx.Frame ):
 		
 		bSizer1 = wx.BoxSizer( wx.VERTICAL )
 		
-		self.LogRedirect = wx.TextCtrl( self, wx.ID_ANY, wx.EmptyString, wx.DefaultPosition, wx.Size( -1,-1 ), wx.TE_MULTILINE|wx.TE_READONLY )
+		self.LogRedirect = wx.TextCtrl( self, wx.ID_ANY, u"\n\n\n\n\n\n\n\n\n\n\n\n\n", wx.DefaultPosition, wx.Size( -1,-1 ), wx.TE_MULTILINE|wx.TE_READONLY )
 		bSizer1.Add( self.LogRedirect, 1, wx.ALIGN_CENTER_HORIZONTAL|wx.ALIGN_CENTER_VERTICAL|wx.ALL|wx.EXPAND, 5 )
 		
 		
