@@ -4,8 +4,8 @@
 
 eoc_inf = {
 	"create_date" : "2014.03.24",
-	"update_date" : "2015.01.23",
-	"version"     : "1.33.01.23",
+	"update_date" : "2015.02.14",
+	"version"     : "1.39.02.14",
 	"description" : u"山东广电网络集团-EoC管理软件",
 	"name"        : "EoC-AMP",
 	"author"      : u"Leniy(Leniy Tsan)",

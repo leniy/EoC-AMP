@@ -39,11 +39,11 @@ class Main_Frame ( eoclib.gui.Main_Frame ):
 		#创建界面
 		eoclib.gui.Main_Frame.__init__ ( self, parent )
 		#读取配置信息
-		start_ip, end_ip, start_pvid, end_pvid = eoclib.func.getconfig()
-		self.StartIP.SetValue(start_ip)
-		self.EndIP.SetValue(end_ip)
-		self.StartPVID.SetValue(start_pvid)
-		self.EndPVID.SetValue(end_pvid)
+		#start_ip, end_ip, start_pvid, end_pvid = eoclib.func.getconfig()
+		#self.StartIP.SetValue(start_ip)
+		#self.EndIP.SetValue(end_ip)
+		#self.StartPVID.SetValue(start_pvid)
+		#self.EndPVID.SetValue(end_pvid)
 		#监听来自update的消息，利用updateDisplay函数更新窗口
 		pub.subscribe(self.updateDisplay, "update")
 		#将系统标准输出重定向
@@ -63,11 +63,11 @@ class Main_Frame ( eoclib.gui.Main_Frame ):
 	def eocstart( self, event ):
 		event.GetEventObject().Disable()#把执行本函数的按钮禁用掉
 		#因为用户可能修改了配置，故需要重新获取一次配置信息，并在线程执行前保存至配置文件
-		start_ip   = str(self.StartIP.GetValue())
-		end_ip     = str(self.EndIP.GetValue())
-		start_pvid = str(self.StartPVID.GetValue())
-		end_pvid   = str(self.EndPVID.GetValue())
-		eoclib.func.saveconfig(start_ip, end_ip, start_pvid, end_pvid)
+		#start_ip   = str(self.StartIP.GetValue())
+		#end_ip     = str(self.EndIP.GetValue())
+		#start_pvid = str(self.StartPVID.GetValue())
+		#end_pvid   = str(self.EndPVID.GetValue())
+		#eoclib.func.saveconfig(start_ip, end_ip, start_pvid, end_pvid)
 		EocStartThread()
 		self.rate_staticText.SetLabel(u"开始自动配置")
 

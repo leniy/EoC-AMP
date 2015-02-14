@@ -2,8 +2,8 @@
 #山东广电网络集团-EoC管理软件
 #作者：Leniy(Leniy Tsan)
 #创建日期：2014.03.24
-#更新日期：2015.01.26
-#修订版本：第37次修订
+#更新日期：2015.02.14
+#修订版本：第39次修订
 
 import urllib2
 import hashlib
@@ -59,32 +59,32 @@ def getiplist():
 #函数功能：保存配置信息
 #函数输入：四个元素(str格式)
 #函数返回：无
-def saveconfig(start_ip, end_ip, start_pvid, end_pvid):
-	configfile = open('config.txt','w+')
-	configfile.write(start_ip + "," + end_ip + "," + start_pvid + "," + end_pvid)
-	configfile.close()
-
+#def saveconfig(start_ip, end_ip, start_pvid, end_pvid):
+#	configfile = open('config.txt','w+')
+#	configfile.write(start_ip + "," + end_ip + "," + start_pvid + "," + end_pvid)
+#	configfile.close()
+#
 #函数功能：读取配置信息
 #函数输入：配置文件名称
 #函数返回：四个元素(str格式)
-def getconfig(config_file = 'config.txt'):
-	try:
-		configfile = open(config_file)
-		configlist = configfile.readline()
-		configfile.close()
-		configlist = configlist.split(',')
-		start_ip   = configlist[0]
-		end_ip     = configlist[1]
-		start_pvid = configlist[2]
-		end_pvid   = configlist[3]
-	except:
-		saveconfig("2","120","2000","2999")
-		start_ip   = "2"
-		end_ip     = "120"
-		start_pvid = "2000"
-		end_pvid   = "2999"
-	return start_ip, end_ip, start_pvid, end_pvid
-
+#def getconfig(config_file = 'config.txt'):
+#	try:
+#		configfile = open(config_file)
+#		configlist = configfile.readline()
+#		configfile.close()
+#		configlist = configlist.split(',')
+#		start_ip   = configlist[0]
+#		end_ip     = configlist[1]
+#		start_pvid = configlist[2]
+#		end_pvid   = configlist[3]
+#	except:
+#		saveconfig("2","120","2000","2999")
+#		start_ip   = "2"
+#		end_ip     = "120"
+#		start_pvid = "2000"
+#		end_pvid   = "2999"
+#	return start_ip, end_ip, start_pvid, end_pvid
+#
 
 
 #函数功能：登陆函数（默认ip可以正常访问）
@@ -151,6 +151,70 @@ def get_dev_unique_number(ip, cookies):
 	except:
 		print 'Error: ' + ip + ' mib_obj_enum.js can NOT be downloaded'
 		return -1
+
+
+#函数功能：获取设备系统时间（默认ip可以正常访问）
+#函数输入：ip、cookies
+#函数返回：十六进制的时间字符串、错误代码（出错时，第一个返回值是一个包含错误原因的字符串）
+def get_clock_date_and_time(ip, cookies):
+	global mib_obj_enum
+	opener = urllib2.build_opener(cookies)
+	request = urllib2.Request(
+		url	 = 'http://%s/g' % (ip),
+		headers = {
+			'Content-Type' : 'application/x-www-form-urlencoded',
+			'Referer' : 'http://%s//sys_timemng.html' % (ip),
+		},
+		data	= 'scalar=%s' % (mib_obj_enum['raisecomClockDateAndTime'])
+	)
+	try:
+		response = opener.open(request)
+		response = response.read()
+		response = response.replace('null','None')
+		response = response.replace('\/','/')
+		ClockDateAndTime = eval(response)
+		if ClockDateAndTime['errcode'] == 0:
+			temptime = ClockDateAndTime[str(mib_obj_enum['raisecomClockDateAndTime'])]
+			return temptime,0
+		elif ClockDateAndTime['errcode'] == -1:
+			tempstr = ClockDateAndTime['errinfo']
+			print 'errinfo: ' + tempstr
+			return tempstr,-1
+	except:
+		print 'Error: ' + ip + ' can NOT get dateandtime'
+		return 'get_dateandtime_error',-1
+
+
+#函数功能：获取Cable频段信息（默认ip可以正常访问）
+#函数输入：ip、cookies
+#函数返回：固定衰减使能、固定衰减值、错误代码（出错时，第一个返回值是一个包含错误原因的字符串）
+def get_cable_freqinfo(ip, cookies):
+	global mib_obj_enum
+	opener = urllib2.build_opener(cookies)
+	request = urllib2.Request(
+		url	 = 'http://%s/g' % (ip),
+		headers = {
+			'Content-Type' : 'application/x-www-form-urlencoded',
+			'Referer' : 'http://%s//eoc_cable_freqinfo.html' % (ip),
+		},
+		data	= 'entry=a:0:0;%s;%s' % (mib_obj_enum['termEocPMDCbatCablePortPowerFixAttenEnable'], mib_obj_enum['termEocPMDCbatCablePortPowerFixAtten'])
+	)
+	try:
+		response = opener.open(request)
+		response = response.read()
+		response = response.replace('null','None')
+		response = response.replace('\/','/')
+		response = eval(response)
+		if response['errcode'] == 0:
+			responsetemp = response['entry'][0]
+			return responsetemp[str(mib_obj_enum['termEocPMDCbatCablePortPowerFixAttenEnable'])],responsetemp[str(mib_obj_enum['termEocPMDCbatCablePortPowerFixAtten'])],0
+		elif response['errcode'] == -1:
+			tempstr = response['errinfo']
+			print 'errinfo: ' + tempstr
+			return tempstr,-1
+	except:
+		print 'Error: ' + ip + ' can NOT get cable_freqinfo'
+		return 'get_cable_freqinfo_error',-1
 
 
 #函数功能：获取设备列表函数（默认ip可以正常访问）
@@ -336,11 +400,13 @@ def set_port_pvid(ip, cookies, port_index, pvid):
 #函数输出：无
 def eoc_auto_main(runtype = "console"):
 	#由于本部分功能与gui窗口属于不同的线程，为了防止冲突，配置信息直接从配置文件中获取
-	start_ip, end_ip, start_pvid, end_pvid = getconfig()
+#	start_ip, end_ip, start_pvid, end_pvid = getconfig()
 #	start_ip   = int(start_ip)
 #	end_ip     = int(end_ip)
-	start_pvid = int(start_pvid)
-	end_pvid   = int(end_pvid)
+#	start_pvid = int(start_pvid)
+#	end_pvid   = int(end_pvid)
+	start_pvid = 2000
+	end_pvid   = 2999
 
 	#把所有的头端ip放到一个列表中
 	all_ip_list = []
