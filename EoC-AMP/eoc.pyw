@@ -1,10 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 #山东广电网络集团-EoC管理软件
 #作者：Leniy(Leniy Tsan)
 #创建日期：2014.03.24
-#更新日期：2014.11.30
-#修订版本：第33次修订
+#修订信息参考__init__.py文件
 
 import wx
 import eoclib
@@ -38,6 +37,10 @@ class Main_Frame ( eoclib.gui.Main_Frame ):
 	def __init__( self, parent ):
 		#创建界面
 		eoclib.gui.Main_Frame.__init__ ( self, parent )
+		self.SetIcon(wx.Icon('res/author.ico', wx.BITMAP_TYPE_ICO))
+		self.about6 = wx.MenuItem( self.about1, wx.ID_ANY, u"更新：" + eoclib.eoc_inf['update_date'], wx.EmptyString, wx.ITEM_NORMAL )
+		self.about1.AppendItem( self.about6 )
+
 		#读取配置信息
 		#start_ip, end_ip, start_pvid, end_pvid = eoclib.func.getconfig()
 		#self.StartIP.SetValue(start_ip)

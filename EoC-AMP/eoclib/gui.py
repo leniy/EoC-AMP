@@ -154,9 +154,6 @@ class Main_Frame ( wx.Frame ):
 		self.about5 = wx.MenuItem( self.about1, wx.ID_ANY, u"授权：仅限公司技术部使用（2014.04-2024.03）", wx.EmptyString, wx.ITEM_NORMAL )
 		self.about1.AppendItem( self.about5 )
 		
-		self.about6 = wx.MenuItem( self.about1, wx.ID_ANY, u"更新：2014.07", wx.EmptyString, wx.ITEM_NORMAL )
-		self.about1.AppendItem( self.about6 )
-		
 		self.m_menubar6.Append( self.about1, u"关于本软件" ) 
 		
 		self.SetMenuBar( self.m_menubar6 )
