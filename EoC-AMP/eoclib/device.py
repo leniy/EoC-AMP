@@ -1,17 +1,19 @@
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 #山东广电网络集团-EoC管理软件
 #作者：Leniy(Leniy Tsan)
 #创建日期：2014.03.24
-#更新日期：2015.02.17
-#修订版本：第40次修订
+#修订信息参考__init__.py文件
 
 import urllib2
 import hashlib
 import socket
 import json
 
-class RcEocHeadCommon(object): # 处理Raisecom公司的EoC头端的通用类
-	def __init__(self, ip, username, password): # 参数为头端的ip地址
+class RcEocHead(object):
+	"""处理Raisecom公司的EoC头端的通用类"""
+	def __init__(self, ip, username, password):
+		"""参数为头端的ip地址、用户名、密码"""
 		self.ip           = ip
 		self.username     = username
 		self.password     = password
@@ -25,6 +27,7 @@ class RcEocHeadCommon(object): # 处理Raisecom公司的EoC头端的通用类
 		self.get_mib_obj_enum()
 
 	def login(self):
+		"""登陆"""
 		if not self.cookies: # 只需要获取一次
 			self.cookies = urllib2.HTTPCookieProcessor()
 			opener = urllib2.build_opener(self.cookies)
@@ -48,6 +51,7 @@ class RcEocHeadCommon(object): # 处理Raisecom公司的EoC头端的通用类
 					print self.device_down_reason
 
 	def get_mib_obj_enum(self):
+		"""获取设备mib数字编号"""
 		if not self.device_is_up:#如果设备是down的，本函数直接跳出
 			return
 		opener = urllib2.build_opener(self.cookies)
@@ -59,12 +63,20 @@ class RcEocHeadCommon(object): # 处理Raisecom公司的EoC头端的通用类
 			response = response.replace(';','')
 			self.mib_obj_enum = json.JSONDecoder().decode(response)
 		except:
-			self.device_is_up = False # request失败，说明此时设备挂掉或者帐号别处登录了，则认为设备的DOWN的
-			self.device_down_reason = 'Error: %s mib_obj_enum.js can NOT be downloaded' % (self.ip)
-			print self.device_down_reason
+			try: # 再试一次，刚刚有可能网络堵塞(例如，多线程中几百个线程同时下载js文件……)
+				response = opener.open(request)
+				response = response.read()
+				response = response.replace('window.top.__mib_oids = ','')
+				response = response.replace(';','')
+				self.mib_obj_enum = json.JSONDecoder().decode(response)
+			except:
+				self.device_is_up = False # request失败，说明此时设备挂掉或者帐号别处登录了，则认为设备的DOWN的
+				self.device_down_reason = 'Error: %s mib_obj_enum.js can NOT be downloaded' % (self.ip)
+				print self.device_down_reason
 
 	@property
-	def dev_time(self): # 获取设备的系统时间(十六进制)
+	def dev_time(self):
+		"""获取设备的系统时间(十六进制)"""
 		default_time = '07 b2 01 01 08 00 00 00 2b 08 00' # 无法获取时间时，返回这个1970-01-01 08:00:00.00 +08:00
 		if not self.device_is_up:#如果设备是down的，直接返回默认时间，后面的代码不执行
 			return default_time
@@ -92,7 +104,8 @@ class RcEocHeadCommon(object): # 处理Raisecom公司的EoC头端的通用类
 			return default_time
 
 	@property
-	def cable_freqinfo(self): # 获取Cable频段信息(固定衰减使能，固定衰减值)
+	def cable_freqinfo(self):
+		"""获取Cable频段信息(固定衰减使能，固定衰减值)"""
 		if not self.device_is_up:#如果设备是down的，后面的代码不执行
 			return (-9999,-9999)
 		opener = urllib2.build_opener(self.cookies)
@@ -119,8 +132,11 @@ class RcEocHeadCommon(object): # 处理Raisecom公司的EoC头端的通用类
 			print self.device_down_reason
 			return self.device_down_reason
 
-	def set_cable_freqinfo_FixAtten(self, attenenable, fixatten): # 使能并设置头端Cable的固定衰减值为FixAtten(cable低频信号过强，会影响高频部分数字电视的误码率)
-		#attenenable=1为使能，attenenable=2为禁止
+	def set_cable_freqinfo_FixAtten(self, attenenable, fixatten):
+		"""使能并设置头端Cable的固定衰减值为FixAtten
+		(cable低频信号过强，会影响高频部分数字电视的误码率)
+		attenenable=1为使能，attenenable=2为禁止
+		"""
 		if not self.device_is_up:#如果设备是down的，后面的代码不执行
 			print  'Device %s is down, set cable freqinfo FixAtten ERROR' % (self.ip)
 			return 'Device %s is down, set cable freqinfo FixAtten ERROR' % (self.ip)
@@ -146,8 +162,10 @@ class RcEocHeadCommon(object): # 处理Raisecom公司的EoC头端的通用类
 			print self.device_down_reason
 			return self.device_down_reason
 
-	def get_cnu_devlist(self): # 获取EoC头端下挂CNU终端的列表
-		#函数返回：列表，其中每项都是一个dict
+	def get_cnu_devlist(self):
+		"""获取EoC头端下挂CNU终端的列表
+		函数返回：列表，其中每项都是一个dict
+		"""
 		if not self.device_is_up:#如果设备是down的，后面的代码不执行，返回一个空列表
 			return []
 		opener = urllib2.build_opener(self.cookies)
@@ -173,12 +191,13 @@ class RcEocHeadCommon(object): # 处理Raisecom公司的EoC头端的通用类
 			print self.device_down_reason
 			return [] # 返回一个空表
 
-	def get_port_pvid(self, port_index): # 获取某终端单个端口的pvid
-		#函数返回：int格式的pvid（pvid > 1 为正常设置，pvid = 1 为尚未设置，pvid = -9999 为系统返回错误）
-
+	def get_port_pvid(self, port_index):
+		"""获取某终端单个端口的pvid
+		函数返回：int格式的pvid
+		（pvid > 1 为正常设置，pvid = 1 为尚未设置，pvid = -9999 为系统返回错误）
+		"""
 		if not self.device_is_up:#如果设备是down的，后面的代码不执行，返回一个-9999
 			return -9999
-
 		#port_index设置原理：
 		#终端设备共有5个端口，分别为1个Cable、4个FE
 		#end_index定义为：某头端中，各个终端设备的索引
@@ -210,7 +229,8 @@ class RcEocHeadCommon(object): # 处理Raisecom公司的EoC头端的通用类
 			print self.device_down_reason
 			return -9999
 
-	def set_port_pvid(self, port_index, pvid): # 设置某终端某个端口的pvid
+	def set_port_pvid(self, port_index, pvid):
+		"""设置某终端某个端口的pvid"""
 		if not self.device_is_up:#如果设备是down的，后面的代码不执行
 			print  'Device %s is down, set port %s pvid %s ERROR' % (self.ip, port_index, pvid)
 			return 'Device %s is down, set port %s pvid %s ERROR' % (self.ip, port_index, pvid)
@@ -232,12 +252,16 @@ class RcEocHeadCommon(object): # 处理Raisecom公司的EoC头端的通用类
 			print self.device_down_reason
 			return -1
 
-	def get_allcnu_info(self): # 显示当前头端下面所有终端的信息（含终端各个FE口的pvid信息）
+	def get_allcnu_info(self):
+		"""显示当前头端下面所有终端的信息
+		（含终端各个FE口的pvid信息）
+		如果头端没有下挂cnu终端，则返回一个空列表
+		函数返回：allcnu_info_list列表，每个元素是一个cnu，每个cnu用dict存储各个信息
+		"""
+		allcnu_info_list = []
+
 		if not self.device_is_up:#如果设备是down的，后面的代码不执行，直接返回空列表
 			return []
-
-		allcnu_info_list = []
-		#函数返回：allcnu_info_list列表，每个元素是一个cnu，每个cnu用dict存储各个信息
 
 		cnu_devlist = self.get_cnu_devlist()
 		for cnu_dev in cnu_devlist:

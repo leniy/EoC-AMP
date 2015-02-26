@@ -1,3 +1,10 @@
+#!/usr/bin/python
+# -*- coding: UTF-8 -*-
+#山东广电网络集团-EoC管理软件
+#作者：Leniy(Leniy Tsan)
+#创建日期：2014.03.24
+#修订信息参考__init__.py文件
+
 from setuptools import setup, find_packages
 import sys
 

@@ -1,16 +1,23 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
+#å±±ä¸œå¹¿ç”µç½‘ç»œé›†å›¢-EoCç®¡ç†è½¯ä»¶
+#ä½œè€…ï¼šLeniy(Leniy Tsan)
+#åˆ›å»ºæ—¥æœŸï¼š2014.03.24
+#ä¿®è®¢ä¿¡æ¯å‚è€ƒ__init__.pyæ–‡ä»¶
 
-#ÈğË¹¿µ´ï×î½üÅú´ÎµÄÍ·¶Ë£¬µÍÆµ²¿·Ö³¡Ç¿¹ı¸ß£¬ÓÃ»§ÉÏÍø»áµ¼ÖÂµçÊÓÂíÈü¿Ë
-#ÓĞÁ½ÖÖ½â¾ö°ì·¨
-# 1.Ìí¼Ó¸ßÍ¨ÂË²¨Æ÷
-# 2.ÊÖ¶¯½«Ã¿¸öÍ·¶ËcableÔöÒæÖµ½µµÍ10dB¡£ÏÂÃæ¾ÍÊÇÅúÁ¿´¦Àí·½·¨
-from eoclibnew.func import *
+"""ç‘æ–¯åº·è¾¾æœ€è¿‘æ‰¹æ¬¡çš„å¤´ç«¯ï¼Œä½é¢‘éƒ¨åˆ†åœºå¼ºè¿‡é«˜ï¼Œç”¨æˆ·ä¸Šç½‘ä¼šå¯¼è‡´ç”µè§†é©¬èµ›å…‹
+#æœ‰ä¸¤ç§è§£å†³åŠæ³•
+# 1.æ·»åŠ é«˜é€šæ»¤æ³¢å™¨
+# 2.æ‰‹åŠ¨å°†æ¯ä¸ªå¤´ç«¯cableå¢ç›Šå€¼é™ä½10dBã€‚ä¸‹é¢å°±æ˜¯æ‰¹é‡å¤„ç†æ–¹æ³•
+"""
 
-aa = getiplist()			
+from eoclib.common import getiplist
+from eoclib.device import RcEocHead
+
+aa = getiplist()
 for ii in aa:
-	a = RcEocHeadCommon(ii, 'xxxxxxx', 'xxxxxxxxxx')
+	a = RcEocHead(ii, 'xxxxxxxxx','xxxxxxxxxxx')
 	if a.device_is_up:
 		#if a.cable_freqinfo[1] == -5:
 		#	a.set_cable_freqinfo_FixAtten(2,0)
-		#print ii ,a.cable_freqinfo
+		print ii ,a.cable_freqinfo
