@@ -1,11 +1,13 @@
+#!/usr/bin/python
 # -*- coding: UTF-8 -*-
 #山东广电网络集团-EoC管理软件
 #作者：Leniy(Leniy Tsan)
+#创建日期：2014.03.24
 
 eoc_inf = {
 	"create_date" : "2014.03.24",
-	"update_date" : "2015.02.14",
-	"version"     : "1.39.02.14",
+	"update_date" : "2015.02.28",
+	"version"     : "1.44.02.28",
 	"description" : u"山东广电网络集团-EoC管理软件",
 	"name"        : "EoC-AMP",
 	"author"      : u"Leniy(Leniy Tsan)",
