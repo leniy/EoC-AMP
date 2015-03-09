@@ -93,7 +93,7 @@ def eoc_auto_main(runtype = "console"):
 	cnu_numbers_thousands = int(cnu_numbers/1000)+1 # 有几千个cnu，方便生成几千个VLAN
 
 	start_pvid = 2000 # 点播VLAN直接减1000计算
-	end_pvid   = 2009
+	end_pvid   = 2999
 	all_vlan_list = []
 	for i in range(cnu_numbers_thousands):
 		all_vlan_list.extend(range(start_pvid,end_pvid + 1))
