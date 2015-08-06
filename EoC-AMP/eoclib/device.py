@@ -23,32 +23,32 @@ class RcEocHead(object):
 		self.device_down_reason = 'device is OK' # 登记设备异常原因
 		if self.device_is_up:
 			self.login()
-		#if self.device_is_up:
 		self.get_mib_obj_enum()
 
 	def login(self):
 		"""登陆"""
-		if not self.cookies: # 只需要获取一次
-			self.cookies = urllib2.HTTPCookieProcessor()
-			opener = urllib2.build_opener(self.cookies)
-			urllib2.socket.setdefaulttimeout(3)  #设置超时为3秒
-			request = urllib2.Request(
-				url = 'http://%s/index.html' % (self.ip),
-				headers = {'Content-Type' : 'application/x-www-form-urlencoded', 'Referer' : 'http://%s/login.html' % (self.ip)},
-				data = 'username=%s&password=%s&language=en&x=38&y=16' % (self.username, hashlib.md5(self.password).hexdigest()),
-			)
-		
-			try:
+		if self.cookies != None: # 只需要获取一次
+			return
+		self.cookies = urllib2.HTTPCookieProcessor()
+		opener = urllib2.build_opener(self.cookies)
+		urllib2.socket.setdefaulttimeout(3)  #设置超时为3秒
+		request = urllib2.Request(
+			url = 'http://%s/index.html' % (self.ip),
+			headers = {'Content-Type' : 'application/x-www-form-urlencoded', 'Referer' : 'http://%s/login.html' % (self.ip)},
+			data = 'username=%s&password=%s&language=en&x=38&y=16' % (self.username, hashlib.md5(self.password).hexdigest()),
+		)
+	
+		try:
+			response = opener.open(request)
+			self.device_is_up = True
+		except:
+			try: # 再试一次，刚刚有可能网络堵塞
 				response = opener.open(request)
 				self.device_is_up = True
 			except:
-				try: # 再试一次，刚刚有可能网络堵塞
-					response = opener.open(request)
-					self.device_is_up = True
-				except:
-					self.device_is_up = False # request失败，说明此时设备挂掉或者帐号别处登录了，则认为设备的DOWN的
-					self.device_down_reason = 'Error: %s Login Failure' % (self.ip)
-					print self.device_down_reason
+				self.device_is_up = False # request失败，说明此时设备挂掉或者帐号别处登录了，则认为设备的DOWN的
+				self.device_down_reason = 'Error: %s Login Failure' % (self.ip)
+				print self.device_down_reason
 
 	def get_mib_obj_enum(self):
 		"""获取设备mib数字编号"""
@@ -131,6 +131,34 @@ class RcEocHead(object):
 			self.device_down_reason = 'Error: %s can NOT get cable_freqinfo' % (self.ip)
 			print self.device_down_reason
 			return self.device_down_reason
+
+	def get_CnuCablePortStatisticEntry(self):
+		"""获取头端下面全部cnu端口统计(平均衰减、平均输出功率、最大输出功率等)"""
+		if not self.device_is_up:#如果设备是down的，后面的代码不执行
+			return []
+		opener = urllib2.build_opener(self.cookies)
+		request = urllib2.Request(
+			url = 'http://%s/g' % (self.ip),
+			headers = { 'Content-Type' : 'application/x-www-form-urlencoded', 'Referer' : 'http://%s//cnu_cable_portstat.html' % (self.ip) },
+			data = 'table=a:0:0;%s' % (self.mib_obj_enum['termEocPMDCnuCablePortStatisticEntry'])
+		)
+
+		try:
+			response = opener.open(request)
+			response = response.read()
+			response = json.JSONDecoder().decode(response)
+			if response['errcode'] == 0:
+				responsetemp = response[str(self.mib_obj_enum['termEocPMDCnuCablePortStatisticEntry'])] # 下面全部cnu，每个是一个dict
+				return responsetemp
+			elif response['errcode'] == -1:
+				tempstr = 'errinfo: ' + response['errinfo']
+				print tempstr
+				return []
+		except:
+			self.device_is_up = False # request失败，说明此时设备挂掉或者帐号别处登录了，则认为设备的DOWN的
+			self.device_down_reason = 'Error: %s can NOT get CnuCablePortStatisticEntry' % (self.ip)
+			print self.device_down_reason
+			return []
 
 	def set_cable_freqinfo_FixAtten(self, attenenable, fixatten):
 		"""使能并设置头端Cable的固定衰减值为FixAtten
