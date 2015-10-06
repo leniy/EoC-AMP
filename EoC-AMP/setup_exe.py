@@ -30,3 +30,5 @@ setup(
 	data_files = [('res', ['res/author.png',"res/author.ico"]),('', ['list.csv'])],
 	windows = [{'script': "eoc.py",'icon_resources': [(1, "res/author.ico")]}]
 )
+
+os.rename('dist/eoc.exe','dist/eoc.'+eoc_inf['version']+'.exe')
