@@ -158,9 +158,9 @@ def eoc_auto_main(runtype = "console"):
 
 #第二步，根据终端的数量，生成VLAN仓库
 	cnu_numbers = len(all_cnu_info_list)
-	cnu_numbers_thousands = int(cnu_numbers/1000)+1 # 有几千个cnu，方便生成几千个VLAN
+	cnu_numbers_thousands = int(cnu_numbers/999)+1 # 有几千个cnu，方便生成几千个VLAN
 
-	start_pvid = 2000 # 点播VLAN直接减1000计算
+	start_pvid = 2001 # 点播VLAN直接减1000计算
 	end_pvid   = 2999
 	all_vlan_list = []
 	for i in range(cnu_numbers_thousands):
@@ -177,7 +177,7 @@ def eoc_auto_main(runtype = "console"):
 #第四步，将未配置的cnu配置上VLAN
 	unset_cnu_count = 0 # 记录有几个未配置的设备
 	for temp_cnu in all_cnu_info_list: #循环检测所有的cnu
-		if temp_cnu['Cnu_pvid1'] == 1:  #如果当前cnu第一个FE网口没有设置pvid，则开始设置
+		if (temp_cnu['Cnu_pvid1'] == 1) or (temp_cnu['Cnu_pvid1'] == 2000):  #如果当前cnu第一个FE网口没有设置pvid（1），或者是默认pvid（2000），则开始设置
 			unset_cnu_count = unset_cnu_count + 1
 			ip = temp_cnu['Eoc_ip']
 			this_dev = RcEocHead(ip, 'admin', 'admin')
